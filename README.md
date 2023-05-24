@@ -1,6 +1,6 @@
 # thanos-metrics-analyzer
 
-A tool to connect to list of thanos end points and compute recommended CPU and memory settings , based on historic usage and request.
+A tool to connect to list of thanos endpoints and compute recommended CPU and memory settings , based on historic usage and resource request.
 
 How to run :
    - Have the thanos.json file updated with your thanos urls and respective tokens
