@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: thanos-urls 
+data:
+  thanos.json: |-
+    {
+      "thanos_endpoints": 
+     [
+       {
+         "url": "https://rbac-query-proxy-open-cluster-management-observability.apps.ocp-412-4xworker-cgk4m.dev07.red-chesterfield.com",
+         "token": "sha256~"
+       },
+       {
+         "url": "https://rbac-query-proxy-open-cluster-management-observability.apps.bu-demo.bu.red-chesterfield.com",
+         "token": "sha256~"
+       }
+     ]
+    }

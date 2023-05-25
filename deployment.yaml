@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  name: thanos-metrics-analyzer 
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: thanos-metrics-analyzer 
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: thanos-metrics-analyzer 
+    spec:
+      containers:
+      - env:
+        - name: LOGROOT 
+          value: "/logs"
+        - name: THANOS_URLS_JSON
+          value: /input/thanos.json
+        image: quay.io/xrajesh/thanos-metrics-analyzer:0.11
+        name: thanos-metrics-analyzer
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            cpu: 25m
+            memory: 32Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          privileged: false
+          readOnlyRootFilesystem: false 
+        volumeMounts:
+        - mountPath: /logs
+          name: thanos-metrics-analyzer 
+        - mountPath: /input 
+          name: thanos-urls
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: multiclusterhub-operator-pull-secret
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        runAsNonRoot: true
+      serviceAccount: insights-client
+      serviceAccountName: insights-client
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/infra
+        operator: Exists
+      volumes:
+      - name: thanos-metrics-analyzer
+        persistentVolumeClaim:
+          claimName: thanos-metrics-analyzer
+      - name: thanos-urls
+        configMap:
+          name: thanos-urls

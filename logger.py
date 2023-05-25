@@ -2,7 +2,8 @@
 import logging
 import os , shutil,datetime
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s') 
-logPath = './logs/'+datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')+'/'
+logRoot = os.environ.get('LOGROOT', './logs')
+logPath = logRoot+'/'+datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')+'/'
 
 class Logger(object):
 

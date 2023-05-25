@@ -1,5 +1,5 @@
 import json
-import os
+import os,time
 from promethus import *
 from logger import *
 from Worker2 import *
@@ -15,10 +15,10 @@ days_delta = int(os.environ.get('METRIC_DAYS','1'))
 start_date = end_date - timedelta(days=days_delta - 1)
 print("Metrics from " ,start_date-timedelta(days=1), "is used to compute recommendation")
 tolerance=int(os.environ.get('TOLERANCE', '0'))
+input_file=os.environ.get('THANOS_URLS_JSON', './input/thanos.json')
 
 def process_input():
     MainLogger.info("Starting processing of input file ")
-    input_file='thanos.json'
     file_present=os.path.isfile(input_file)
     assert file_present ,f"Input file not found {input_file}"
     MainLogger.info("Found input file "+input_file)
@@ -38,6 +38,8 @@ def process_input():
   
     # Close file
     f.close()
+    print("Processing complete , get your csv output")
+    time.sleep(500)
     return
 
     
