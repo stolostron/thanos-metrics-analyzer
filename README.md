@@ -3,7 +3,7 @@
 A tool to connect to list of thanos endpoints and compute recommended CPU and memory settings , based on historic usage and resource request.
 
 How to run :
-   - Have the thanos.json file updated with your thanos urls and respective tokens
+   - Have the ./input/thanos.json file updated with your thanos urls and respective tokens
    - run shell script ./recommend.sh
 
 Output : 
