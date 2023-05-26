@@ -34,7 +34,7 @@ def process_input():
             MainLogger.error("Connection to Thanos server failed, url : %s",item['url'])
         else:
             MainLogger.info("Connection to Thanos server success, url : %s",item['url'])
-            print("Processing acm hub : ", item['hub_name'])
+            print("Processing acm hub : ", item['hub_name'] , "on past",days_delta ,"days of metrics")
             worker=Worker2(conn,item['hub_name'],item)
             worker.process_metric_data(start_date, end_date, tolerance)
   
