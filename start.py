@@ -30,16 +30,18 @@ def process_input():
         MainLogger.info("Connecting to thanos server number %s : url:  %s",idx+1 ,item['url'])
         conn = PromClient(item['url'],item['token']).get_thanos_client()
         if conn is None:
+            print("Error connecting to thanos on acm hub :",item['hub_name'] )
             MainLogger.error("Connection to Thanos server failed, url : %s",item['url'])
         else:
             MainLogger.info("Connection to Thanos server success, url : %s",item['url'])
-            worker=Worker2(conn,idx+1,item)
+            print("Processing acm hub : ", item['hub_name'])
+            worker=Worker2(conn,item['hub_name'],item)
             worker.process_metric_data(start_date, end_date, tolerance)
   
     # Close file
     f.close()
-    print("Processing complete , get your csv output")
-    time.sleep(500)
+    #print("Processing complete , get your csv output")
+    #time.sleep(500)
     return
 
     

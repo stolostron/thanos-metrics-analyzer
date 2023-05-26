@@ -5,11 +5,11 @@ from queries import *
 from pandas import DataFrame,concat,date_range
 GB_FACTOR = 1e9
 class Worker2(object):
-    def __init__(self,prom_conn,idx,endpoint):
+    def __init__(self,prom_conn,name,endpoint):
         self.p_client=prom_conn
-        self.idx=idx
+        self.name=name
         self.endpoint=endpoint
-        self.endpointLogger = Logger("endpoint"+str(idx),formatter,logPath).get_logger(str(idx)+".log",logging.INFO)
+        self.endpointLogger = Logger("endpoint"+name,formatter,logPath).get_logger(name+".log",logging.INFO)
 
     def get_metric_data(self,query, epoch: int = None):
         parameters = {"query": query}
@@ -106,14 +106,15 @@ class Worker2(object):
         df_merged["memory_recommendation"] = df_merged.memory_usage_max * (1 + tolerance / 100)
         
         
-        self.endpointLogger.info("Output for endpoint %s : %s",self.idx,self.endpoint)
+        self.endpointLogger.info("Output for endpoint %s : %s",self.name,self.endpoint)
         # Sort By Delta
         df_merged.drop(columns=['ephemeral_storage_value'],errors='ignore',inplace=True)
         df_merged.sort_values(by=['cpu_delta','memory_delta'],ascending=False,na_position="last",inplace=True)
         df_merged['grafana_url'] = self.endpoint['url'].replace("rbac-query-proxy","grafana")
         print("Top 5 recommendations for clusters in:",self.endpoint['url'])
         print(df_merged.head(5))
-        outFile=logPath+str(self.idx)+'.csv'
+        print("Processed metrics from ",df_merged.cluster.nunique(),"clusters ")
+        outFile=logPath+self.name+'.csv'
         MainLogger.info("Started writing output csv : %s ", outFile)
         df_merged.to_csv(outFile)
         MainLogger.info("Completed writing output csv : %s ", outFile)     
