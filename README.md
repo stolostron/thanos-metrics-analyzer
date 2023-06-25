@@ -8,3 +8,5 @@ How to run :
 
 Output : 
    - Go to the logs folder and look for .csv files with recommendations. CSV files are named after the index order of the thanos url.
+
+For more details understanding on how the system works, proceed [here](doc/details.md)   
