@@ -2,7 +2,7 @@ import json
 import os,time
 from promethus import *
 from logger import *
-from Worker2 import *
+from batch_worker import *
 from datetime import datetime, timedelta
 
 
@@ -15,6 +15,7 @@ days_delta = int(os.environ.get('METRIC_DAYS','1'))
 start_date = end_date - timedelta(days=days_delta - 1)
 print("Metrics from " ,start_date-timedelta(days=1), "is used to compute recommendation")
 tolerance=int(os.environ.get('TOLERANCE', '0'))
+batch_size=int(os.environ.get('BATCH_SIZE', '1'))
 input_file=os.environ.get('THANOS_URLS_JSON', './input/thanos.json')
 
 def process_input():
@@ -35,8 +36,8 @@ def process_input():
         else:
             MainLogger.info("Connection to Thanos server success, url : %s",item['url'])
             print("Processing acm hub : ", item['hub_name'] , "on past",days_delta ,"days of metrics")
-            worker=Worker2(conn,item['hub_name'],item)
-            worker.process_metric_data(start_date, end_date, tolerance)
+            worker=batch_worker(conn,item['hub_name'],item)
+            worker.process_metric_data(start_date, end_date, tolerance,batch_size)
   
     # Close file
     f.close()
