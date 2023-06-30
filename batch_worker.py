@@ -3,6 +3,9 @@ import csv
 from logger import *
 from queries import *
 from pandas import DataFrame,concat,date_range
+from timeit import default_timer as timer
+from datetime import datetime
+
 GB_FACTOR = 1e9
 class batch_worker(object):
     def __init__(self,prom_conn,name,endpoint):
@@ -11,21 +14,33 @@ class batch_worker(object):
         self.endpoint=endpoint
         self.endpointLogger = Logger("endpoint"+name,formatter,logPath).get_logger(name+".log",logging.INFO)
 
-    def get_metric_data(self,query, epoch: int = None):
+    def get_metric_data(self,query,batch_ids, epoch: int = None):
+        self.endpointLogger.info("--------------Begin------------------")
+        print("Querying Metric for clusters : " + batch_ids)
         parameters = {"query": query}
         if epoch:
             # For range date, values before epoch is considered for aggregation
             parameters.update({"params": {"time": epoch}})
+        start = timer()
         metric_data = self.p_client.custom_query(**parameters)
-        self.endpointLogger.info("get_metric_data %s" , str(parameters))
-        metric_data = self.p_client.custom_query(**parameters)
-    
-        return DataFrame(
+        end = timer()
+        self.endpointLogger.info("finished running quey: %s" , str(parameters["query"]))
+        if epoch:
+            date_time = datetime.fromtimestamp(int(epoch))
+            self.endpointLogger.info("metrics queried for one day with time %s" , date_time)
+
+        self.endpointLogger.info("time to run query: %s", end-start)
+        if end-start > 250:
+            self.endpointLogger.info("Warning ,query taking more than 250s: %s", end-start)
+
+        self.endpointLogger.info("---------------End-------------------")
+        df= DataFrame(
             [
                 {**item["metric"], "value": float(item["value"][1])}
                 for item in metric_data
             ]
         )
+        return df
 
     def get_grouped_aggregation(self,df_data_list, agg_func: str = "max"):
         return concat(df_data_list).groupby(
@@ -39,12 +54,11 @@ class batch_worker(object):
         df_request_data = self.process_metrics_batch(
             RESOURCE_REQUEST, cluster_ids_filter, end_date.strftime("%s")
         )
-
+        
         df_request_data = df_request_data.pivot(
             index=[ID_LABEL, "namespace"],
             columns="resource",
         ).swaplevel(1, 0, axis=1)
-
         df_request_data.columns = ["_".join(col) for col in df_request_data.columns]
         df_request_data.memory_value = df_request_data.memory_value / GB_FACTOR
 
@@ -56,7 +70,7 @@ class batch_worker(object):
 
         for dt in date_range(start_date, end_date):
             epoch = dt.strftime("%s")
-
+            print("Getting usage metrics from date  ", dt.strftime("%d-%m-%Y"))
             cpu_usage_max.append(
                 self.process_metrics_batch(CPU_USAGE_MAX, cluster_ids_filter, epoch)
             )
@@ -77,6 +91,7 @@ class batch_worker(object):
             [
                 self.get_metric_data(
                     query.replace("CLUSTER_FILTER", batch_ids),
+                    batch_ids,
                     end_date
                 )
                 for batch_ids in cluster_ids
@@ -85,7 +100,7 @@ class batch_worker(object):
     
     def get_cluster_id_batch(self,end_date, batch_size):
         cluster_ids = self.get_metric_data(CLUSTER_IDS, end_date.strftime("%s"))[ID_LABEL].unique()
-        print("batch size"+ str(batch_size))
+        print("Reading clusters of batch size : "+ str(batch_size))
         result = [
             "|".join(cluster_ids[pos:pos + batch_size])
             for pos in range(0, len(cluster_ids), batch_size)
