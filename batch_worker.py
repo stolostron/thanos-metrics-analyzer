@@ -29,7 +29,7 @@ class batch_worker(object):
             date_time = datetime.fromtimestamp(int(epoch))
             self.endpointLogger.info("metrics queried for one day with time %s" , date_time)
 
-        self.endpointLogger.info("time to run query: %s", end-start)
+        self.endpointLogger.info("time to run query: %s seconds", end-start)
         if end-start > 250:
             self.endpointLogger.info("Warning ,query taking more than 250s: %s", end-start)
 
