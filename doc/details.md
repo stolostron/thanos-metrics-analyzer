@@ -1,6 +1,11 @@
 # Overview
 This code can be run on any cluster or desktop as long as it can access to all the ACM hub Thanos which it connects to as defined in [thanos.json](../input/thanos.json).
 
+#### Namespace Filter
+* Please update namespace_filter with action `include` or `exclude` and list of namespaces.
+* Namespaces can be actual name or regex (ex: openshift.*)
+* If filter is not given, default action is to exclude empty/null namespace label. 
+
 ## Analysis
 The system examines for each namespace on each cluster -
 1. CPU Usage and Memory Usage over a period of time
