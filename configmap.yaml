@@ -8,10 +8,16 @@ data:
       "thanos_endpoints": 
      [
        {
+         "hub_name": "hub-1",
+         "namespace_filter": {
+            "action": "exclude",
+            "namespaces": ["openshift.*", "open-cluster.*"]
+          }
          "url": "https://rbac-query-proxy-open-cluster-management-observability.apps.ocp-412-4xworker-cgk4m.dev07.red-chesterfield.com",
          "token": "sha256~"
        },
        {
+         "hub_name": "hub-2",
          "url": "https://rbac-query-proxy-open-cluster-management-observability.apps.bu-demo.bu.red-chesterfield.com",
          "token": "sha256~"
        }

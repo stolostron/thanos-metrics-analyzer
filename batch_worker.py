@@ -13,6 +13,27 @@ class batch_worker(object):
         self.name=name
         self.endpoint=endpoint
         self.endpointLogger = Logger("endpoint"+name,formatter,logPath).get_logger(name+".log",logging.INFO)
+        self._namespace_filter = self._get_namespace_filter()
+
+    def _get_namespace_filter(self):
+        """Get update namespace filter condition required for the query."""
+        # Default filter is not to select empty/null namespace label
+        namespace_filter_str = "namespace!=''"
+
+        namespace_filter = self.endpoint.get("namespace_filter", None)
+        if namespace_filter:
+            namespaces = "|".join(namespace_filter.get("namespaces", []))
+            filter_action = namespace_filter.get("action", "exclude")
+            if filter_action == "exclude":
+                namespace_filter_str = f"namespace!~'{namespaces}'"
+            elif filter_action == "include":
+                namespace_filter_str = f"namespace=~'{namespaces}'"
+            else:
+                self.endpointLogger.error(
+                    "Only exclude/include actions are allowed for namespace filter."
+                    f" Using filter {namespace_filter_str}"
+                )
+        return namespace_filter_str
 
     def get_metric_data(self,query,batch_ids, epoch: int = None):
         self.endpointLogger.info("--------------Begin------------------")
@@ -45,14 +66,17 @@ class batch_worker(object):
     def get_grouped_aggregation(self,df_data_list, agg_func: str = "max"):
         return concat(df_data_list).groupby(
             [ID_LABEL, "namespace"]
-        ).agg(agg_func).reset_index()
+        ).agg({"value": agg_func, "dummy_counter": "sum"}).reset_index()
 
     def get_merged_data(self,df_data1, df_data2):
         return df_data1.merge(df_data2, on=[ID_LABEL, "namespace"], how="left")
     
     def get_request_data_batch(self,end_date, cluster_ids_filter):
+        resource_req_query = RESOURCE_REQUEST.replace(
+            "NAMESPACE_FILTER", self._namespace_filter
+        )
         df_request_data = self.process_metrics_batch(
-            RESOURCE_REQUEST, cluster_ids_filter, end_date.strftime("%s")
+            resource_req_query, cluster_ids_filter, end_date.strftime("%s"), False
         )
         
         df_request_data = df_request_data.pivot(
@@ -67,15 +91,21 @@ class batch_worker(object):
     def get_usage_data_batch(self,start_date, end_date, cluster_ids_filter):
         cpu_usage_max = []
         memory_usage_max = []
+        cpu_usage_query = CPU_USAGE_MAX.replace(
+            "NAMESPACE_FILTER", self._namespace_filter
+        )
+        mem_usage_query = MEMORY_USAGE_MAX.replace(
+            "NAMESPACE_FILTER", self._namespace_filter
+        )
 
         for dt in date_range(start_date, end_date):
             epoch = dt.strftime("%s")
             print("Getting usage metrics from date  ", dt.strftime("%d-%m-%Y"))
             cpu_usage_max.append(
-                self.process_metrics_batch(CPU_USAGE_MAX, cluster_ids_filter, epoch)
+                self.process_metrics_batch(cpu_usage_query, cluster_ids_filter, epoch)
             )
             memory_usage_max.append(
-                self.process_metrics_batch(MEMORY_USAGE_MAX, cluster_ids_filter, epoch)
+                self.process_metrics_batch(mem_usage_query, cluster_ids_filter, epoch)
             )
 
         df_cpu_usage_max = self.get_grouped_aggregation(cpu_usage_max, "max")
@@ -86,8 +116,8 @@ class batch_worker(object):
         return df_cpu_usage_max, df_memory_usage_max
 
     
-    def process_metrics_batch(self,query, cluster_ids, end_date):
-        return concat(
+    def process_metrics_batch(self,query, cluster_ids, end_date, add_dummy: bool = True):
+        df_metric_data = concat(
             [
                 self.get_metric_data(
                     query.replace("CLUSTER_FILTER", batch_ids),
@@ -97,6 +127,9 @@ class batch_worker(object):
                 for batch_ids in cluster_ids
             ]
         )
+        if add_dummy:
+            df_metric_data["dummy_counter"] = 1
+        return df_metric_data
     
     def get_cluster_id_batch(self,end_date, batch_size):
         cluster_ids = self.get_metric_data(CLUSTER_IDS, end_date.strftime("%s"))[ID_LABEL].unique()
@@ -135,7 +168,11 @@ class batch_worker(object):
         df_merged["memory_delta"] = df_merged.memory_request - df_merged.memory_usage_max
         df_merged["cpu_recommendation"] =  df_merged.cpu_usage_max * (1 + tolerance / 100)
         df_merged["memory_recommendation"] = df_merged.memory_usage_max * (1 + tolerance / 100)
-        
+
+        df_merged["days_active"] = df_merged[
+            ["dummy_counter_x", "dummy_counter_y"]
+        ].fillna(0).apply(min, axis=1)
+        df_merged.drop(columns=["dummy_counter_x", "dummy_counter_y"], inplace=True)
         
         self.endpointLogger.info("Output for endpoint %s : %s",self.name,self.endpoint)
         # Sort By Delta
