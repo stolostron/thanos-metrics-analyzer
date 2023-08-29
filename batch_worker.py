@@ -166,8 +166,11 @@ class batch_worker(object):
         df_merged["memory_ratio"] = df_merged.memory_usage_max / df_merged.memory_request
         df_merged["cpu_delta"] =  df_merged.cpu_request - df_merged.cpu_usage_max
         df_merged["memory_delta"] = df_merged.memory_request - df_merged.memory_usage_max
-        df_merged["cpu_recommendation"] =  df_merged.cpu_usage_max * (1 + tolerance / 100)
-        df_merged["memory_recommendation"] = df_merged.memory_usage_max * (1 + tolerance / 100)
+
+        df_merged["cpu_recommendation_request"] = df_merged.cpu_usage_max * (1 + tolerance / 100)
+        df_merged["memory_recommendation_request"] = df_merged.memory_usage_max * (1 + tolerance / 100)
+        df_merged["cpu_recommendation_limit"] = df_merged["cpu_recommendation_request"]
+        df_merged["memory_recommendation_limit"] = df_merged["memory_recommendation_request"]
 
         df_merged["days_active"] = df_merged[
             ["dummy_counter_x", "dummy_counter_y"]
