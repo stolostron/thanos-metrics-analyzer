@@ -17,6 +17,7 @@ print("Metrics from " ,start_date-timedelta(days=1), "is used to compute recomme
 tolerance=int(os.environ.get('TOLERANCE', '0'))
 batch_size=int(os.environ.get('BATCH_SIZE', '1'))
 input_file=os.environ.get('THANOS_URLS_JSON', './input/thanos.json')
+grafana_dashboard_uid = os.environ.get('GRAFANA_DASHBOARD_UID', '')
 
 def process_input():
     MainLogger.info("Starting processing of input file ")
@@ -36,8 +37,12 @@ def process_input():
         else:
             MainLogger.info("Connection to Thanos server success, url : %s",item['url'])
             print("Processing acm hub : ", item['hub_name'] , "on past",days_delta ,"days of metrics")
-            worker=batch_worker(conn,item['hub_name'],item)
-            worker.process_metric_data(start_date, end_date, tolerance,batch_size)
+            if grafana_dashboard_uid:
+                worker=batch_worker(conn,item['hub_name'],item,grafana_dashboard_uid)
+                worker.process_metric_data(start_date, end_date, tolerance,batch_size)
+            else:
+                MainLogger.error("GRAFANA_DASHBOARD_UID is null, Please provide valid GRAFANA_DASHBOARD_UID.")
+                raise ValueError("GRAFANA_DASHBOARD_UID is null, Please provide valid GRAFANA_DASHBOARD_UID.")
   
     # Close file
     f.close()

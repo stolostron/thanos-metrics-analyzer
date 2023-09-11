@@ -8,10 +8,11 @@ from datetime import datetime
 
 GB_FACTOR = 1e9
 class batch_worker(object):
-    def __init__(self,prom_conn,name,endpoint):
+    def __init__(self,prom_conn,name,endpoint,grafana_dashboard_uid):
         self.p_client=prom_conn
         self.name=name
         self.endpoint=endpoint
+        self.grafana_dashboard_uid=grafana_dashboard_uid
         self.endpointLogger = Logger("endpoint"+name,formatter,logPath).get_logger(name+".log",logging.INFO)
         self._namespace_filter = self._get_namespace_filter()
 
@@ -131,7 +132,7 @@ class batch_worker(object):
             df_metric_data["dummy_counter"] = 1
         return df_metric_data
     
-    def get_cluster_id_batch(self,end_date, batch_size):
+    def get_cluster_id_batch(self, end_date, batch_size):
         cluster_ids = self.get_metric_data(CLUSTER_IDS, end_date.strftime("%s"))[ID_LABEL].unique()
         print("Reading clusters of batch size : "+ str(batch_size))
         result = [
@@ -139,6 +140,11 @@ class batch_worker(object):
             for pos in range(0, len(cluster_ids), batch_size)
         ]
         return result
+    
+    def get_grafana_url_for_namespace(self, df):
+        return f"""{df['grafana_url']}/d/{self.grafana_dashboard_uid}/
+        kubernetes-compute-resources-namespace-pods?var-datasource=Observatorium&
+        var-cluster=local-cluster&var-namespace={df['namespace']}"""
     
     def process_metric_data(self,start_date, end_date, tolerance,batch_size):
         MainLogger.info("Working on endpoint %s " , self.endpoint) 
@@ -182,6 +188,7 @@ class batch_worker(object):
         df_merged.drop(columns=['ephemeral_storage_value'],errors='ignore',inplace=True)
         df_merged.sort_values(by=['cpu_delta','memory_delta'],ascending=False,na_position="last",inplace=True)
         df_merged['grafana_url'] = self.endpoint['url'].replace("rbac-query-proxy","grafana")
+        df_merged['grafana_url'] = df_merged.apply(self.get_grafana_url_for_namespace, axis=1)
         print("Top 5 recommendations for clusters in:",self.endpoint['url'])
         print(df_merged.head(5))
         print("Processed metrics from ",df_merged.cluster.nunique(),"clusters ")
