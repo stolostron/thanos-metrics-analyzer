@@ -4,6 +4,7 @@ A tool to connect to list of thanos endpoints and compute recommended CPU and me
 
 How to run :
    - Have the ./input/thanos.json file updated with your thanos urls and respective tokens
+   - Update the ./recommend.sh file with the valid GRAFANA_DASHBOARD_UID. (The uid is available in the bottom part of the configmap `grafana-dashboard-k8s-compute-resources-namespace-pods`.)
    - run shell script ./recommend.sh
 
 Output : 
