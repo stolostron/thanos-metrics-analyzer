@@ -16,7 +16,9 @@ spec:
           value: "/logs"
         - name: THANOS_URLS_JSON
           value: /input/thanos.json
-        image: quay.io/image_name:tag
+        - name: GRAFANA_DASHBOARD_UID
+          value: "85a562078cdf77779eaa1add43ccec1e"
+        image: quay.io/stolostron/thanos-metrics-analyzer:a1011 
         name: thanos-metrics-analyzer
         imagePullPolicy: IfNotPresent
         resources:

@@ -8,5 +8,5 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: gp3-csi
+  storageClassName: gp2-csi  #update your storeageclass here 
   volumeMode: Filesystem
