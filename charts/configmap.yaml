@@ -14,7 +14,7 @@ data:
            "namespaces": ["openshift.*", "open-cluster.*"]
          },
          "url": "https://rbac-query-proxy-open-cluster-management-observability.apps.ocp-412-4xworker-kqjjn.dev07.red-chesterfield.com",
-         "token": "sha256~***REMOVED***"
+         "token": "sha256~"
        },
        {
          "hub_name":"hub-2",
