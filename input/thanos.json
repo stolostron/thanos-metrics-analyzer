@@ -13,7 +13,7 @@
        {
          "hub_name":"hub-2",
          "url": "https://rbac-query-proxy-open-cluster-management-observability.apps.bu-demo.bu.red-chesterfield.com",
-         "token": "sha256~***REMOVED***"
+         "token": "sha256~"
        }
      ]
 }
