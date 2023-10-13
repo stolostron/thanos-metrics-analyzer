@@ -25,3 +25,6 @@ MEMORY_USAGE_MAX = f"""
       (container_memory_working_set_bytes{{{ID_LABEL}=~'CLUSTER_FILTER', NAMESPACE_FILTER}})[1d:{resolution}]
     )
 """
+NAMESPACE_LABELS = f"""
+    kube_namespace_labels{{LABEL_FILTER}}
+"""

@@ -6,6 +6,11 @@ This code can be run on any cluster or desktop as long as it can access to all t
 * Namespaces can be actual name or regex (ex: openshift.*)
 * If filter is not given, default action is to exclude empty/null namespace label. 
 
+#### Labels Filter
+* Please update label_filter with action `include` or `exclude` and labels with the name and value of the label as key-value pairs ex. `label_name:label_value`
+* Label values may be a string or a list.
+* If both label_filter and namespace_filter is given, precedence will be given to label_filter. 
+
 ## Analysis
 The system examines for each namespace on each cluster -
 1. CPU Usage and Memory Usage over a period of time

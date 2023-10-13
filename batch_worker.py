@@ -7,6 +7,8 @@ from timeit import default_timer as timer
 from datetime import datetime
 
 GB_FACTOR = 1e9
+
+
 class batch_worker(object):
     def __init__(self,prom_conn,name,endpoint,grafana_dashboard_uid):
         self.p_client=prom_conn
@@ -18,11 +20,44 @@ class batch_worker(object):
 
     def _get_namespace_filter(self):
         """Get update namespace filter condition required for the query."""
-        # Default filter is not to select empty/null namespace label
         namespace_filter_str = "namespace!=''"
-
         namespace_filter = self.endpoint.get("namespace_filter", None)
-        if namespace_filter:
+
+        label_filter = self.endpoint.get("label_filter", None)
+
+        namespaces = []
+        #Default to use namespace label filter if available.
+        if label_filter != None:
+            
+            # Get action for filter (either exclude or include)
+            filter_action = label_filter.get("action", "value")
+            if filter_action == "exclude":
+                action = "!~"
+            elif filter_action == "include":
+                action = "=~"
+            else:
+                self.endpointLogger.error(
+                    "Only exclude/include actions are allowed for label filter."
+                    f" Using filter {label_filter}"
+                )
+
+            #Access labels from endpoint:
+            for name, value in label_filter.get("labels", "values").items():
+                if isinstance(value, list):
+                    concatenate_value = "|".join(value)
+                    label_filter_prom = f'label_{name}{action}"{concatenate_value}"'
+                    namespaces.append(self.get_namespace_from_labels(label_filter_prom))
+                else:
+                    label_filter_prom = f'label_{name}{action}"{value}"'
+                    namespaces.append(self.get_namespace_from_labels(label_filter_prom))
+
+
+            namespaces = "|".join(namespaces)
+            namespace_filter_str = f'namespace{action}"{namespaces}"'
+
+
+        # If namespace labels not available, check for namespace filter
+        else:
             namespaces = "|".join(namespace_filter.get("namespaces", []))
             filter_action = namespace_filter.get("action", "exclude")
             if filter_action == "exclude":
@@ -34,8 +69,17 @@ class batch_worker(object):
                     "Only exclude/include actions are allowed for namespace filter."
                     f" Using filter {namespace_filter_str}"
                 )
-        return namespace_filter_str
 
+        return namespace_filter_str
+        
+    # Function to query prom with label filters obtained from user to get the namespaces associated with labels:
+    def get_namespace_from_labels(self, label_filter_prom):
+            label_query = NAMESPACE_LABELS.replace("LABEL_FILTER", label_filter_prom)
+            result = self.p_client.custom_query(label_query)
+            for data in result:
+                return f"{data['metric']['namespace']}"
+        
+    
     def get_metric_data(self,query,batch_ids, epoch: int = None):
         self.endpointLogger.info("--------------Begin------------------")
         print("Querying Metric for clusters : " + batch_ids)
@@ -146,6 +190,7 @@ class batch_worker(object):
         kubernetes-compute-resources-namespace-pods?var-datasource=Observatorium&
         var-cluster=local-cluster&var-namespace={df['namespace']}"""
     
+    
     def process_metric_data(self,start_date, end_date, tolerance,batch_size):
         MainLogger.info("Working on endpoint %s " , self.endpoint) 
         cluster_ids_batch = self.get_cluster_id_batch(end_date, batch_size)
@@ -189,8 +234,9 @@ class batch_worker(object):
         df_merged.sort_values(by=['cpu_delta','memory_delta'],ascending=False,na_position="last",inplace=True)
         df_merged['grafana_url'] = self.endpoint['url'].replace("rbac-query-proxy","grafana")
         df_merged['grafana_url'] = df_merged.apply(self.get_grafana_url_for_namespace, axis=1)
+
         print("Top 5 recommendations for clusters in:",self.endpoint['url'])
-        print(df_merged.head(5))
+        print(df_merged.head(10))
         print("Processed metrics from ",df_merged.cluster.nunique(),"clusters ")
         outFile=logPath+self.name+'.csv'
         MainLogger.info("Started writing output csv : %s ", outFile)
@@ -198,8 +244,3 @@ class batch_worker(object):
         MainLogger.info("Completed writing output csv : %s ", outFile)     
         #return df_merged
   
-
-
-
-   
-    
