@@ -1,20 +1,10 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1 
+kind: Job 
 metadata:
   annotations:
     deployment.kubernetes.io/revision: "1"
   name: thanos-metrics-analyzer 
 spec:
-  replicas: 1
-  revisionHistoryLimit: 10
-  selector:
-    matchLabels:
-      name: thanos-metrics-analyzer 
-  strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
   template:
     metadata:
       labels:
@@ -26,7 +16,9 @@ spec:
           value: "/logs"
         - name: THANOS_URLS_JSON
           value: /input/thanos.json
-        image: quay.io/xrajesh/thanos-metrics-analyzer:0.11
+        - name: GRAFANA_DASHBOARD_UID
+          value: "85a562078cdf77779eaa1add43ccec1e"
+        image: quay.io/stolostron/thanos-metrics-analyzer:a1011 
         name: thanos-metrics-analyzer
         imagePullPolicy: IfNotPresent
         resources:
@@ -45,22 +37,13 @@ spec:
         volumeMounts:
         - mountPath: /logs
           name: thanos-metrics-analyzer 
-        - mountPath: /input 
+        - mountPath: /input
           name: thanos-urls
-      dnsPolicy: ClusterFirst
+      restartPolicy: Never
       imagePullSecrets:
-      - name: multiclusterhub-operator-pull-secret
-      restartPolicy: Always
-      schedulerName: default-scheduler
-      securityContext:
-        runAsNonRoot: true
-      serviceAccount: insights-client
-      serviceAccountName: insights-client
-      terminationGracePeriodSeconds: 30
-      tolerations:
-      - effect: NoSchedule
-        key: node-role.kubernetes.io/infra
-        operator: Exists
+      - name: thanos-metrics-analyzer-pull-secret
+      serviceAccount: thanos-metrics-analyzer
+      serviceAccountName: thanos-metrics-analyzer
       volumes:
       - name: thanos-metrics-analyzer
         persistentVolumeClaim:
