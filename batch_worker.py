@@ -57,7 +57,37 @@ class batch_worker(object):
 
 
         # If namespace labels not available, check for namespace filter
-        elif namespace_filter !=None:
+            # Join all namespaces
+            try:
+                namespaces = "|".join(namespaces)
+                namespace_filter_str = f'namespace{action}"{namespaces}"'
+                return namespace_filter_str
+            except TypeError:
+                  self.endpointLogger.error(
+                    "Labels not found. Ensure these labels exist in cluster or check spelling."
+                    f" Using filter {namespace_filter_str}"
+                )
+        
+
+        # If namespace labels not available, check for namespace filter
+        if namespace_filter != None:
+            namespaces = "|".join(namespace_filter.get("namespaces", []))
+            filter_action = namespace_filter.get("action", "exclude")
+            if filter_action == "exclude":
+                namespace_filter_str = f"namespace!~'{namespaces}'"
+            elif filter_action == "include":
+                namespace_filter_str = f"namespace=~'{namespaces}'"
+            else:
+                self.endpointLogger.error(
+                    "Only exclude/include actions are allowed for namespace filter."
+                    f" Using filter {namespace_filter_str}"
+                )
+        else:
+            self.endpointLogger.warning(
+                    "No namespace filter or labels filter provided. Using all namespaces."
+                )
+            
+        return namespace_filter_str
             namespaces = "|".join(namespace_filter.get("namespaces", []))
             filter_action = namespace_filter.get("action", "exclude")
             if filter_action == "exclude":
