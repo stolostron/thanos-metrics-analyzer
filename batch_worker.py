@@ -29,7 +29,7 @@ class batch_worker(object):
         #Default to use namespace label filter if available.
         if label_filter != None:
             
-            # Get action for filter (either exclude or include)
+            # Get action for filter
             filter_action = label_filter.get("action", "value")
             if filter_action == "exclude":
                 action = "!~"
@@ -41,7 +41,7 @@ class batch_worker(object):
                     f" Using filter {label_filter}"
                 )
 
-            #Access labels from endpoint:
+            # Get namespaces connected to the labels we get from the endpoint:
             for name, value in label_filter.get("labels", "values").items():
                 if isinstance(value, list):
                     concatenate_value = "|".join(value)
@@ -51,13 +51,20 @@ class batch_worker(object):
                     label_filter_prom = f'label_{name}{action}"{value}"'
                     namespaces.append(self.get_namespace_from_labels(label_filter_prom))
 
-
-            namespaces = "|".join(namespaces)
-            namespace_filter_str = f'namespace{action}"{namespaces}"'
-
+            # Join all namespaces
+            try:
+                namespaces = "|".join(namespaces)
+                namespace_filter_str = f'namespace{action}"{namespaces}"'
+                return namespace_filter_str
+            except TypeError:
+                  self.endpointLogger.error(
+                    "Labels not found. Ensure these labels exist in cluster or check spelling."
+                    f" Using filter {namespace_filter_str}"
+                )
+        
 
         # If namespace labels not available, check for namespace filter
-        else:
+        if namespace_filter != None:
             namespaces = "|".join(namespace_filter.get("namespaces", []))
             filter_action = namespace_filter.get("action", "exclude")
             if filter_action == "exclude":
@@ -69,7 +76,11 @@ class batch_worker(object):
                     "Only exclude/include actions are allowed for namespace filter."
                     f" Using filter {namespace_filter_str}"
                 )
-
+        else:
+            self.endpointLogger.warning(
+                    "No namespace filter or labels filter provided. Using all namespaces."
+                )
+            
         return namespace_filter_str
         
     # Function to query prom with label filters obtained from user to get the namespaces associated with labels:
