@@ -57,7 +57,7 @@ class batch_worker(object):
 
 
         # If namespace labels not available, check for namespace filter
-        else:
+        elif namespace_filter !=None:
             namespaces = "|".join(namespace_filter.get("namespaces", []))
             filter_action = namespace_filter.get("action", "exclude")
             if filter_action == "exclude":
