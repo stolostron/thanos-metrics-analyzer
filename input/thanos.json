@@ -7,7 +7,14 @@
            "action": "exclude",
            "namespaces": ["openshift.*", "open-cluster.*"]
          },
-         "url": "https://rbac-query-proxy-open-cluster-management-observability.apps.ocp-412-4xworker-kqjjn.dev07.red-chesterfield.com",
+         "label_filter": {
+          "action": "include",
+          "labels": {
+            "label_name_1":"label_value_1",
+            "label_name_2":["label_value_2","label_value_3"]
+          }
+        },
+         "url": "https://rbac-query-proxy-open-cluster-management-observability.apps.ocp-412-4xworker-cgk4m.dev07.red-chesterfield.com",
          "token": "sha256~"
        },
        {
