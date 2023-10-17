@@ -41,7 +41,7 @@ spec:
           name: thanos-urls
       restartPolicy: Never
       imagePullSecrets:
-      - name: thanos-metrics-analyzer-pull-secret
+      - name: thanos-metrics-analyzer-pull-secret  #update your pull-secret name
       serviceAccount: thanos-metrics-analyzer
       serviceAccountName: thanos-metrics-analyzer
       volumes:
