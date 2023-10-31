@@ -8,7 +8,7 @@ This code can be run on any cluster or desktop as long as it can access to all t
 
 #### Labels Filter
 * Please update label_filter with action `include` or `exclude` and labels with the name and value of the label as key-value pairs ex. `label_name:label_value`
-* Label values may be a string or a list.
+* Label values may be a string or a list. Use underscore to separate strings like example above.
 * If both label_filter and namespace_filter is given, precedence will be given to label_filter. 
 
 ## Analysis

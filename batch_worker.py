@@ -85,6 +85,10 @@ class batch_worker(object):
         
     # Function to query prom with label filters obtained from user to get the namespaces associated with labels:
     def get_namespace_from_labels(self, label_filter_prom):
+            
+            if "-" in label_filter_prom:
+                label_filter_prom = label_filter_prom.replace("-","_")
+
             label_query = NAMESPACE_LABELS.replace("LABEL_FILTER", label_filter_prom)
             result = self.p_client.custom_query(label_query)
             for data in result:
