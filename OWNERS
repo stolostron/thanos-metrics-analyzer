@@ -1,0 +1,9 @@
+# DO NOT EDIT; this file is auto-generated using https://github.com/openshift/ci-tools.
+approvers:
+  - anxhela21
+  - asamal4
+  - xrajesh
+reviewers:
+  - anxhela21
+  - asamal4
+  - xrajesh
