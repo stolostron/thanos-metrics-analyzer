@@ -16,6 +16,7 @@ start_date = end_date - timedelta(days=days_delta - 1)
 print("Metrics from " ,start_date-timedelta(days=1), "is used to compute recommendation")
 tolerance=int(os.environ.get('TOLERANCE', '0'))
 batch_size=int(os.environ.get('BATCH_SIZE', '1'))
+recommender_type = str(os.environ.get('RECOMMENDER_TYPE', NAMESPACE_RECOMMENDER_TYPE))
 input_file=os.environ.get('THANOS_URLS_JSON', './input/thanos.json')
 grafana_dashboard_uid = os.environ.get('GRAFANA_DASHBOARD_UID', '')
 
@@ -27,7 +28,7 @@ def process_input():
     f=open(input_file)  
     thanos_endpoints = json.load(f)
     endpoint_list=thanos_endpoints['thanos_endpoints']
-    # Iterating through each thanos end point
+    # Iterating through each thanos endpoint
     for idx,item in enumerate(endpoint_list):
         MainLogger.info("Connecting to thanos server number %s : url:  %s",idx+1 ,item['url'])
         conn = PromClient(item['url'],item['token']).get_thanos_client()
@@ -37,13 +38,15 @@ def process_input():
         else:
             MainLogger.info("Connection to Thanos server success, url : %s",item['url'])
             print("Processing acm hub : ", item['hub_name'] , "on past",days_delta ,"days of metrics")
+
             if grafana_dashboard_uid:
-                worker=batch_worker(conn,item['hub_name'],item,grafana_dashboard_uid)
-                worker.process_metric_data(start_date, end_date, tolerance,batch_size)
+                worker=batch_worker(conn,item['hub_name'],recommender_type, item,grafana_dashboard_uid, start_date, end_date, tolerance, batch_size)
+                #worker.process_metric_data(start_date, end_date, tolerance,batch_size)
+                worker.start_process_metric_data()
             else:
                 MainLogger.error("GRAFANA_DASHBOARD_UID is null, Please provide valid GRAFANA_DASHBOARD_UID.")
                 raise ValueError("GRAFANA_DASHBOARD_UID is null, Please provide valid GRAFANA_DASHBOARD_UID.")
-  
+
     # Close file
     f.close()
     #print("Processing complete , get your csv output")

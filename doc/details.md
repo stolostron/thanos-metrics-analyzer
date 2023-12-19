@@ -37,5 +37,6 @@ Note: All pods in the namespace may not have requests assigned.
 - Currently, the number of days used in analysis defaults to 10 days.
 - It can be adjusted in [recommend.sh](../recommend.sh)
 
-
+## Recommender type
+- It is possible to produce the recommendation at namespace or workload level, default value is `namespace`
 
