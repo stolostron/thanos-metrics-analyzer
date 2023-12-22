@@ -7,13 +7,13 @@ GB_FACTOR = 1e9
 resolution=os.environ.get('RESOLUTION', '10m')
 # Queries
 
-CLUSTER_IDS = "cluster_version" 
+CLUSTER_IDS = "cluster_version"
 
 RESOURCE_REQUEST_WORKLOAD = f"""
     sum(
       kube_pod_container_resource_requests{{{ID_LABEL}=~'CLUSTER_FILTER', NAMESPACE_FILTER}}
       * on(namespace,pod)
-      group_left(workload, workload_type) namespace_workload_pod:kube_pod_owner:relabel
+      group_left(workload, workload_type) namespace_workload_pod:kube_pod_owner:relabel{{{ID_LABEL}=~'CLUSTER_FILTER', NAMESPACE_FILTER}}
     ) by ({ID_LABEL}, namespace, workload, resource)
 """
 
@@ -22,7 +22,7 @@ CPU_USAGE_MAX_WORKLOAD = f"""
       sum (
         node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate{{{ID_LABEL}=~'CLUSTER_FILTER', NAMESPACE_FILTER}}
         * on(namespace,pod)
-        group_left(workload, workload_type) namespace_workload_pod:kube_pod_owner:relabel
+        group_left(workload, workload_type) namespace_workload_pod:kube_pod_owner:relabel{{{ID_LABEL}=~'CLUSTER_FILTER', NAMESPACE_FILTER}}
       ) by ({ID_LABEL}, namespace, workload) [1d:{resolution}]
     )
 """
@@ -32,7 +32,7 @@ MEMORY_USAGE_MAX_WORKLOAD = f"""
       sum (
         container_memory_working_set_bytes{{{ID_LABEL}=~'CLUSTER_FILTER', NAMESPACE_FILTER}}
         * on(namespace,pod)
-        group_left(workload, workload_type) namespace_workload_pod:kube_pod_owner:relabel
+        group_left(workload, workload_type) namespace_workload_pod:kube_pod_owner:relabel{{{ID_LABEL}=~'CLUSTER_FILTER', NAMESPACE_FILTER}}
       ) by ({ID_LABEL}, namespace, workload) [1d:{resolution}]
     )
 """
