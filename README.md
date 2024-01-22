@@ -20,4 +20,4 @@ Output :
    - Go to the current date folder in the PVC mount and look for .csv files with recommendations. CSV files are named after the index order of the thanos url.
    - Charts directory include a sleeping pod that can be used to access the PVC mount
 
-For more details understanding on how the system works, proceed [here](doc/details.md)   
+For more details to understand on how the system works, proceed [here](doc/details.md)   
