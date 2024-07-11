@@ -21,3 +21,11 @@ Output :
    - Charts directory include a sleeping pod that can be used to access the PVC mount
 
 For more details to understand on how the system works, proceed [here](doc/details.md)   
+
+# Enhanced Dev Preview
+
+The output of the thanos-metrics-analyzer is a **CSV** file with max usage values and recommendations for CPU and memory utilization. **No charts** were made available to customers in the RHACM console.
+
+With the new enhancements made to the developer preview experience, including simplified user navigation directly in the RHACM console, **Grafana dashboards** are now enriched with right-sizing recommendations for cluster as well as namespace level based on CPU and memory information. 
+
+For more details checkout [this](doc/enhance-dev-preview-overview.md) page. 
