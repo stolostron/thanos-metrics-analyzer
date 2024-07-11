@@ -1,6 +1,6 @@
 # Prerequisite 
 - Openshift Cluster (Tested with 4.15.13+ version)
-- Advance Cluster Management operator should be installed for ACM hub/spoke feature 
+- The Advanced Cluster Management operator should be installed on the hub cluster to facilitate cluster administration and data aggregation.
 - [MCO](https://github.com/stolostron/multicluster-observability-operator/) should be installed into the hub cluster. 
 - `oc` CLI should be installed and configured to interact with Openshift cluster
 
