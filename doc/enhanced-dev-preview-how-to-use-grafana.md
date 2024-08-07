@@ -12,7 +12,7 @@ This Document described how you can interact with grafana dashboards.
    * Aggregation: It contains number of days we want to get data from. Ex: for `Max Overall` if you select `30d` that means we are looking for 30 days peak/max value for the CPU/Memory and looking for recommendation based on `30d` data points. 
 
 
-3. Left 3 Panels show cluster level maximum values over selected last days of aggregation for CPU/Mem Recommendation, CPU/Mem Request and CPU/Mem Utilization%.
+3. Left 4 Panels show cluster level maximum values over selected last days of aggregation for CPU/Mem Recommendation, CPU/Mem Utilization, CPU/Mem Request and CPU/Mem Utilization%.
 
     ![Left Panels](https://github.com/stolostron/thanos-metrics-analyzer/blob/main/data-assets/images/left-panel.png)
 

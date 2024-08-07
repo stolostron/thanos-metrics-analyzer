@@ -30,8 +30,8 @@ data:
       "editable": true,
       "gnetId": null,
       "graphTooltip": 0,
-      "id": 13,
-      "iteration": 1720615665513,
+      "id": 34,
+      "iteration": 1723026380481,
       "links": [],
       "panels": [
         {
@@ -83,7 +83,7 @@ data:
             "overrides": []
           },
           "gridPos": {
-            "h": 4,
+            "h": 3,
             "w": 4,
             "x": 0,
             "y": 1
@@ -230,7 +230,7 @@ data:
           "fieldConfig": {
             "defaults": {
               "color": {
-                "fixedColor": "text",
+                "fixedColor": "#ffffff",
                 "mode": "fixed"
               },
               "mappings": [
@@ -260,10 +260,90 @@ data:
             "overrides": []
           },
           "gridPos": {
-            "h": 4,
+            "h": 3,
             "w": 4,
             "x": 0,
-            "y": 5
+            "y": 4
+          },
+          "id": 33,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "8.5.20",
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "max_over_time(acm_rs:cluster:cpu_usage{cluster=\"$cluster\", profile=\"$profile\"}[$days:])",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "CPU Usage",
+          "transformations": [
+            {
+              "id": "reduce",
+              "options": {
+                "reducers": [
+                  "lastNotNull"
+                ]
+              }
+            }
+          ],
+          "type": "stat"
+        },
+        {
+          "datasource": null,
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "#ffffff",
+                "mode": "fixed"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "index": 0,
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "max": 1,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 3,
+            "w": 4,
+            "x": 0,
+            "y": 7
           },
           "id": 18,
           "options": {
@@ -344,10 +424,10 @@ data:
             "overrides": []
           },
           "gridPos": {
-            "h": 4,
+            "h": 3,
             "w": 4,
             "x": 0,
-            "y": 9
+            "y": 10
           },
           "id": 14,
           "options": {
@@ -756,7 +836,7 @@ data:
             "overrides": []
           },
           "gridPos": {
-            "h": 4,
+            "h": 3,
             "w": 4,
             "x": 0,
             "y": 23
@@ -931,10 +1011,90 @@ data:
             "overrides": []
           },
           "gridPos": {
-            "h": 4,
+            "h": 3,
             "w": 4,
             "x": 0,
-            "y": 27
+            "y": 26
+          },
+          "id": 34,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "8.5.20",
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "max_over_time(acm_rs:cluster:memory_usage{cluster=\"$cluster\", profile=\"$profile\"}[$days:])",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "Memory Usage",
+          "transformations": [
+            {
+              "id": "reduce",
+              "options": {
+                "reducers": [
+                  "lastNotNull"
+                ]
+              }
+            }
+          ],
+          "type": "stat"
+        },
+        {
+          "datasource": null,
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "#f9fcfb",
+                "mode": "fixed"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "index": 0,
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "max": 1,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 3,
+            "w": 4,
+            "x": 0,
+            "y": 29
           },
           "id": 28,
           "options": {
@@ -1004,10 +1164,10 @@ data:
             "overrides": []
           },
           "gridPos": {
-            "h": 4,
+            "h": 3,
             "w": 4,
             "x": 0,
-            "y": 31
+            "y": 32
           },
           "id": 32,
           "options": {
@@ -1397,7 +1557,7 @@ data:
           {
             "allValue": null,
             "current": {
-              "selected": true,
+              "selected": false,
               "text": "spoke1",
               "value": "spoke1"
             },
@@ -1514,5 +1674,5 @@ data:
       "timezone": "",
       "title": "ACM Right-Sizing Namespace",
       "uid": "bnqQIPySE",
-      "version": 5
+      "version": 6
     }
