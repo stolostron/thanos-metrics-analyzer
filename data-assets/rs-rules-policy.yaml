@@ -42,7 +42,7 @@ spec:
                                 * on (namespace) group_left()
                                 (kube_namespace_labels{label_env=~"prod|dev"} or kube_namespace_labels{label_env=''})
                             ) by (namespace)
-                            [5m:5m]
+                            [5m:]
                         )
                     - record: "acm_rs:namespace:cpu_usage:5m"
                       expr: >
@@ -55,7 +55,7 @@ spec:
                                 * on (namespace) group_left()
                                 (kube_namespace_labels{label_env=~"prod|dev"} or kube_namespace_labels{label_env=''})
                             ) by (namespace)
-                            [5m:5m]
+                            [5m:]
                         )
                     - record: "acm_rs:namespace:memory_request:5m"
                       expr: >
@@ -69,7 +69,7 @@ spec:
                                 * on (namespace) group_left()
                                 (kube_namespace_labels{label_env=~"prod|dev"} or kube_namespace_labels{label_env=''})
                             ) by (namespace)
-                            [5m:5m]
+                            [5m:]
                         )
                     - record: "acm_rs:namespace:memory_usage:5m"
                       expr: >
@@ -82,7 +82,7 @@ spec:
                                 * on (namespace) group_left()
                                 (kube_namespace_labels{label_env=~"prod|dev"} or kube_namespace_labels{label_env=''})
                             ) by (namespace)
-                            [5m:5m]
+                            [5m:]
                         )
                 - name: acm-right-sizing-namespace-1d.rules
                   interval: 15m
@@ -146,7 +146,7 @@ spec:
                                 * on (namespace) group_left()
                                 (kube_namespace_labels{label_env=~"prod|dev"} or kube_namespace_labels{label_env=''})
                             ) by (cluster)
-                            [5m:5m]
+                            [5m:]
                         )
                     - record: "acm_rs:cluster:cpu_usage:5m"
                       expr: >
@@ -159,7 +159,7 @@ spec:
                                 * on (namespace) group_left()
                                 (kube_namespace_labels{label_env=~"prod|dev"} or kube_namespace_labels{label_env=''})
                             ) by (cluster)
-                            [5m:5m]
+                            [5m:]
                           )
                     - record: "acm_rs:cluster:memory_request:5m"
                       expr: >
@@ -173,7 +173,7 @@ spec:
                                 * on (namespace) group_left()
                                 (kube_namespace_labels{label_env=~"prod|dev"} or kube_namespace_labels{label_env=''})
                             ) by (cluster)
-                            [5m:5m]
+                            [5m:]
                         )
                     - record: "acm_rs:cluster:memory_usage:5m"
                       expr: >
@@ -186,7 +186,7 @@ spec:
                                 * on (namespace) group_left()
                                 (kube_namespace_labels{label_env=~"prod|dev"} or kube_namespace_labels{label_env=''})
                             ) by (cluster)
-                            [5m:5m]
+                            [5m:]
                         )
                 - name: acm-right-sizing-cluster-1d.rule
                   interval: 15m
