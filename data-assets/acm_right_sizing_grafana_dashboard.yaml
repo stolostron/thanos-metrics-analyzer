@@ -31,7 +31,11 @@ data:
       "gnetId": null,
       "graphTooltip": 0,
       "id": 15,
+<<<<<<< HEAD
       "iteration": 1728059156670,
+=======
+      "iteration": 1727976284238,
+>>>>>>> 8617f08 (updating grafana dashboard to display top n underutilized namespaces in CPU and Memory panels)
       "links": [],
       "panels": [
         {
@@ -173,7 +177,11 @@ data:
           "targets": [
             {
               "exemplar": true,
+<<<<<<< HEAD
               "expr": "topk(20,\nsum by (namespace) (acm_rs:namespace:cpu_usage{cluster=\"$cluster\", profile=\"$profile\"})\n/\nsum by (namespace) (acm_rs:namespace:cpu_request{cluster=\"$cluster\", profile=\"$profile\"})\n)",
+=======
+              "expr": "topk(${top_n},\nsum by (namespace) (acm_rs:namespace:cpu_usage{cluster=\"$cluster\", profile=\"$profile\"})\n/\nsum by (namespace) (acm_rs:namespace:cpu_request{cluster=\"$cluster\", profile=\"$profile\"})\n)",
+>>>>>>> 8617f08 (updating grafana dashboard to display top n underutilized namespaces in CPU and Memory panels)
               "format": "time_series",
               "instant": false,
               "interval": "",
@@ -924,7 +932,11 @@ data:
           "targets": [
             {
               "exemplar": true,
+<<<<<<< HEAD
               "expr": "topk(20,\nsum by (namespace) (acm_rs:namespace:memory_usage{cluster=\"$cluster\", profile=\"$profile\"})\n/\nsum by (namespace) (acm_rs:namespace:memory_request{cluster=\"$cluster\", profile=\"$profile\"})\n)",
+=======
+              "expr": "topk(${top_n},\nsum by (namespace) (acm_rs:namespace:memory_usage{cluster=\"$cluster\", profile=\"$profile\"})\n/\nsum by (namespace) (acm_rs:namespace:memory_request{cluster=\"$cluster\", profile=\"$profile\"})\n)",
+>>>>>>> 8617f08 (updating grafana dashboard to display top n underutilized namespaces in CPU and Memory panels)
               "format": "time_series",
               "instant": false,
               "interval": "",
@@ -1557,14 +1569,22 @@ data:
           {
             "allValue": null,
             "current": {
+<<<<<<< HEAD
               "selected": true,
+=======
+              "selected": false,
+>>>>>>> 8617f08 (updating grafana dashboard to display top n underutilized namespaces in CPU and Memory panels)
               "text": "ac-test-man-1",
               "value": "ac-test-man-1"
             },
             "datasource": "${datasource}",
             "definition": "label_values(acm_rs:cluster:cpu_request,cluster)",
             "description": null,
-            "error": null,
+            "error": {
+              "data": {
+                "message": "Unexpected error"
+              }
+            },
             "hide": 0,
             "includeAll": false,
             "label": "Cluster",
@@ -1611,7 +1631,7 @@ data:
           {
             "allValue": null,
             "current": {
-              "selected": true,
+              "selected": false,
               "text": "5d",
               "value": "5d"
             },
@@ -1663,16 +1683,55 @@ data:
             "queryValue": "",
             "skipUrlSync": false,
             "type": "custom"
+          },
+          {
+            "allValue": null,
+            "current": {
+              "selected": false,
+              "text": "5",
+              "value": "5"
+            },
+            "description": null,
+            "error": null,
+            "hide": 0,
+            "includeAll": false,
+            "label": null,
+            "multi": false,
+            "name": "top_n",
+            "options": [
+              {
+                "selected": true,
+                "text": "5",
+                "value": "5"
+              },
+              {
+                "selected": false,
+                "text": "10",
+                "value": "10"
+              },
+              {
+                "selected": false,
+                "text": "20",
+                "value": "20"
+              }
+            ],
+            "query": "5, 10, 20",
+            "skipUrlSync": false,
+            "type": "custom"
           }
         ]
       },
       "time": {
-        "from": "now-7d",
+        "from": "now-90d",
         "to": "now"
       },
       "timepicker": {},
       "timezone": "",
       "title": "ACM Right-Sizing Namespace",
       "uid": "bnqQIPySE",
+<<<<<<< HEAD
       "version": 2
+=======
+      "version": 5
+>>>>>>> 8617f08 (updating grafana dashboard to display top n underutilized namespaces in CPU and Memory panels)
     }
