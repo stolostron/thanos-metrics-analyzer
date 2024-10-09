@@ -30,8 +30,8 @@ data:
       "editable": true,
       "gnetId": null,
       "graphTooltip": 0,
-      "id": 34,
-      "iteration": 1723026380481,
+      "id": 15,
+      "iteration": 1728059156670,
       "links": [],
       "panels": [
         {
@@ -173,7 +173,7 @@ data:
           "targets": [
             {
               "exemplar": true,
-              "expr": "acm_rs:namespace:cpu_usage{cluster=\"$cluster\", profile=\"$profile\"}",
+              "expr": "topk(20,\nsum by (namespace) (acm_rs:namespace:cpu_usage{cluster=\"$cluster\", profile=\"$profile\"})\n/\nsum by (namespace) (acm_rs:namespace:cpu_request{cluster=\"$cluster\", profile=\"$profile\"})\n)",
               "format": "time_series",
               "instant": false,
               "interval": "",
@@ -185,7 +185,7 @@ data:
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "CPU Usage",
+          "title": "CPU Usage of Top Underutilized Namespaces",
           "tooltip": {
             "shared": false,
             "sort": 0,
@@ -924,7 +924,7 @@ data:
           "targets": [
             {
               "exemplar": true,
-              "expr": "acm_rs:namespace:memory_usage{cluster=\"$cluster\", profile=\"$profile\"}",
+              "expr": "topk(20,\nsum by (namespace) (acm_rs:namespace:memory_usage{cluster=\"$cluster\", profile=\"$profile\"})\n/\nsum by (namespace) (acm_rs:namespace:memory_request{cluster=\"$cluster\", profile=\"$profile\"})\n)",
               "format": "time_series",
               "instant": false,
               "interval": "",
@@ -936,7 +936,7 @@ data:
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "Memory Usage",
+          "title": "Memory Usage for Top Underutilized Namespaces",
           "tooltip": {
             "shared": false,
             "sort": 0,
@@ -1528,7 +1528,7 @@ data:
           "type": "table"
         }
       ],
-      "refresh": "",
+      "refresh": false,
       "schemaVersion": 30,
       "style": "dark",
       "tags": [],
@@ -1557,9 +1557,9 @@ data:
           {
             "allValue": null,
             "current": {
-              "selected": false,
-              "text": "spoke1",
-              "value": "spoke1"
+              "selected": true,
+              "text": "ac-test-man-1",
+              "value": "ac-test-man-1"
             },
             "datasource": "${datasource}",
             "definition": "label_values(acm_rs:cluster:cpu_request,cluster)",
@@ -1674,5 +1674,5 @@ data:
       "timezone": "",
       "title": "ACM Right-Sizing Namespace",
       "uid": "bnqQIPySE",
-      "version": 6
+      "version": 2
     }
