@@ -31,11 +31,7 @@ data:
       "gnetId": null,
       "graphTooltip": 0,
       "id": 15,
-<<<<<<< HEAD
-      "iteration": 1728059156670,
-=======
       "iteration": 1727976284238,
->>>>>>> 8617f08 (updating grafana dashboard to display top n underutilized namespaces in CPU and Memory panels)
       "links": [],
       "panels": [
         {
