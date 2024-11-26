@@ -44,16 +44,16 @@ spec:
             data:
               metrics_list.yaml: |
                 names:
-                  - acm_vm_rs:namespace:cpu_request
-                  - acm_vm_rs:namespace:cpu_usage
-                  - acm_vm_rs:namespace:memory_request
-                  - acm_vm_rs:namespace:memory_usage
-                  - acm_vm_rs:namespace:cpu_recommendation
-                  - acm_vm_rs:namespace:memory_recommendation
-                  - acm_vm_rs:cluster:cpu_request
-                  - acm_vm_rs:cluster:cpu_usage
-                  - acm_vm_rs:cluster:memory_request
-                  - acm_vm_rs:cluster:memory_usage
-                  - acm_vm_rs:cluster:cpu_recommendation
-                  - acm_vm_rs:cluster:memory_recommendation
+                  - acm_vm_rs_test:namespace:cpu_request
+                  - acm_vm_rs_test:namespace:cpu_usage
+                  - acm_vm_rs_test:namespace:memory_request
+                  - acm_vm_rs_test:namespace:memory_usage
+                  - acm_vm_rs_test:namespace:cpu_recommendation
+                  - acm_vm_rs_test:namespace:memory_recommendation
+                  - acm_vm_rs_test:cluster:cpu_request
+                  - acm_vm_rs_test:cluster:cpu_usage
+                  - acm_vm_rs_test:cluster:memory_request
+                  - acm_vm_rs_test:cluster:memory_usage
+                  - acm_vm_rs_test:cluster:cpu_recommendation
+                  - acm_vm_rs_test:cluster:memory_recommendation
 

@@ -31,7 +31,7 @@ spec:
                     - name: acm-vm-right-sizing-namespace-5m.rule
                       interval: 5m
                       rules:
-                        - record: 'acm_vm_rs:namespace:cpu_request:5m'
+                        - record: 'acm_vm_rs_test:namespace:cpu_request:5m'
                           expr: |
                             max_over_time(
                               sum(
@@ -47,7 +47,7 @@ spec:
                                   label_kubernetes_io_metadata_name!=''
                                 })
                               ) by (name, namespace)[5m:])
-                        - record: 'acm_vm_rs:namespace:memory_request:5m'
+                        - record: 'acm_vm_rs_test:namespace:memory_request:5m'
                           expr: |
                             max_over_time(
                               sum(
@@ -62,7 +62,7 @@ spec:
                                   label_kubernetes_io_metadata_name!=''
                                 })
                               ) by (name, namespace)[5m:])
-                        - record: 'acm_vm_rs:namespace:cpu_usage:5m'
+                        - record: 'acm_vm_rs_test:namespace:cpu_usage:5m'
                           expr: |
                             max_over_time(
                               sum(
@@ -78,64 +78,59 @@ spec:
                                   label_kubernetes_io_metadata_name!=''
                                 })
                               ) by (name, namespace)[5m:])
-                        - record: 'acm_vm_rs:namespace:memory_usage:5m'
+                        - record: 'acm_vm_rs_test:namespace:memory_usage:5m'
                           expr: |
                             max_over_time(
-                              sum(
-                                kubevirt_vmi_memory_available_bytes{
-                                  name!='',
-                                  namespace!~'openshift.*',
-                                  container!='',
-                                } - kubevirt_vmi_memory_usable_bytes{
-                                  name!='',
-                                  namespace!~'openshift.*',
-                                  container!='',
-                                } * on (namespace) group_left()
-                                (kube_namespace_labels{label_env=~"prod|dev"} or kube_namespace_labels{label_env=''})
-                              ) by (name, namespace)[5m:])
+                              sum(rate(
+                                kubevirt_vmi_memory_used_bytes{name!='', namespace!~'openshift.*', container!=''}[5m:]
+                              ) 
+                              * on (namespace) group_left()
+                              (kube_namespace_labels{label_env=~"prod|dev"} or kube_namespace_labels{label_env=''})
+                            ) by (name, namespace)[5m:]
+                            )
                     - name: acm-vm-right-sizing-namespace-1d.rules
                       interval: 15m
                       rules:
-                        - record: 'acm_vm_rs:namespace:cpu_request'
+                        - record: 'acm_vm_rs_test:namespace:cpu_request'
                           expr: |
-                            max_over_time(acm_vm_rs:namespace:cpu_request:5m[1d])
+                            max_over_time(acm_vm_rs_test:namespace:cpu_request:5m[1d])
                           labels:
                             aggregation: 1d
                             profile: Max OverAll
-                        - record: 'acm_vm_rs:namespace:cpu_usage'
+                        - record: 'acm_vm_rs_test:namespace:cpu_usage'
                           expr: |
-                            max_over_time(acm_vm_rs:namespace:cpu_usage:5m[1d])
+                            max_over_time(acm_vm_rs_test:namespace:cpu_usage:5m[1d])
                           labels:
                             aggregation: 1d
                             profile: Max OverAll
-                        - record: 'acm_vm_rs:namespace:memory_request'
+                        - record: 'acm_vm_rs_test:namespace:memory_request'
                           expr: |
-                            max_over_time(acm_vm_rs:namespace:memory_request:5m[1d])
+                            max_over_time(acm_vm_rs_test:namespace:memory_request:5m[1d])
                           labels:
                             aggregation: 1d
                             profile: Max OverAll
-                        - record: 'acm_vm_rs:namespace:memory_usage'
+                        - record: 'acm_vm_rs_test:namespace:memory_usage'
                           expr: |
-                            max_over_time(acm_vm_rs:namespace:memory_usage:5m[1d])
+                            max_over_time(acm_vm_rs_test:namespace:memory_usage:5m[1d])
                           labels:
                             aggregation: 1d
                             profile: Max OverAll
-                        - record: 'acm_vm_rs:namespace:cpu_recommendation'
+                        - record: 'acm_vm_rs_test:namespace:cpu_recommendation'
                           expr: |
-                            max_over_time(acm_vm_rs:namespace:cpu_usage{profile="Max OverAll"}[1d]) * (1 + (10/100))
+                            max_over_time(acm_vm_rs_test:namespace:cpu_usage{profile="Max OverAll"}[1d]) * (1 + (10/100))
                           labels:
                             aggregation: 1d
                             profile: Max OverAll
-                        - record: 'acm_vm_rs:namespace:memory_recommendation'
+                        - record: 'acm_vm_rs_test:namespace:memory_recommendation'
                           expr: |
-                            max_over_time(acm_vm_rs:namespace:memory_usage{profile="Max OverAll"}[1d]) * (1 + (10/100))
+                            max_over_time(acm_vm_rs_test:namespace:memory_usage{profile="Max OverAll"}[1d]) * (1 + (10/100))
                           labels:
                             aggregation: 1d
                             profile: Max OverAll
                     - name: acm-vm-right-sizing-cluster-5m.rule
                       interval: 5m
                       rules:
-                        - record: 'acm_vm_rs:cluster:cpu_request:5m'
+                        - record: 'acm_vm_rs_test:cluster:cpu_request:5m'
                           expr: |
                             max_over_time(
                               sum(
@@ -151,7 +146,7 @@ spec:
                                   label_kubernetes_io_metadata_name!=''
                                 })
                               ) by (cluster)[5m:])
-                        - record: 'acm_vm_rs:cluster:memory_request:5m'
+                        - record: 'acm_vm_rs_test:cluster:memory_request:5m'
                           expr: |
                             max_over_time(
                               sum(
@@ -166,67 +161,69 @@ spec:
                                   label_kubernetes_io_metadata_name!=''
                                 })
                               ) by (cluster)[5m:])
-                        - record: 'acm_vm_rs:cluster:cpu_usage:5m'
+                        - record: 'acm_vm_rs_test:cluster:cpu_usage:5m'
                           expr: |
                             max_over_time(
                               sum(
-                                kubevirt_vmi_cpu_usage_seconds_total{
-                                  name!='',
-                                  namespace!~'openshift.*',
-                                  container!='',
-                                } * on (namespace) group_left()
+                                rate(
+                                  kubevirt_vmi_cpu_usage_seconds_total{
+                                    name!='',
+                                    namespace!~'openshift.*',
+                                    container!=''
+                                  }[5m:]
+                                ) * on (namespace) group_left()
                                 (kube_namespace_labels{
                                   label_env=~"prod|dev|",
                                   label_kubernetes_io_metadata_name!=''
                                 })
                               ) by (cluster)[5m:])
-                        - record: 'acm_vm_rs:cluster:memory_usage:5m'
+                        - record: 'acm_vm_rs_test:cluster:memory_usage:5m'
                           expr: |
                             max_over_time(
-                              sum(
-                                kubevirt_vmi_memory_available_bytes{
-                                  name!='',
-                                  namespace!~'openshift.*',
-                                  container!='',
-                                } - kubevirt_vmi_memory_usable_bytes{
-                                  name!='',
-                                  namespace!~'openshift.*',
-                                  container!='',
-                                } * on (namespace) group_left()
-                                (kube_namespace_labels{label_env=~"prod|dev"} or kube_namespace_labels{label_env=''})
-                              ) by (cluster)[5m:])
+                              sum(rate(
+                                kubevirt_vmi_memory_used_bytes{name!='', namespace!~'openshift.*', container!=''}[5m:]
+                              ) 
+                              * on (namespace) group_left()
+                              (kube_namespace_labels{label_env=~"prod|dev"} or kube_namespace_labels{label_env=''})
+                            ) by (cluster)[5m:]
+                            )
                     - name: acm-vm-right-sizing-cluster-1d.rules
                       interval: 15m
                       rules:
-                        - record: 'acm_vm_rs:cluster:cpu_request'
+                        - record: 'acm_vm_rs_test:cluster:cpu_request'
                           expr: |
-                            max_over_time(acm_vm_rs:cluster:cpu_request:5m[1d])
+                            max_over_time(acm_vm_rs_test:cluster:cpu_request:5m[1d])
                           labels:
                             aggregation: 1d
                             profile: Max OverAll
-                        - record: 'acm_vm_rs:cluster:cpu_usage'
+                        - record: 'acm_vm_rs_test:cluster:cpu_usage'
                           expr: |
-                            max_over_time(acm_vm_rs:cluster:cpu_usage:5m[1d])
+                            max_over_time(acm_vm_rs_test:cluster:cpu_usage:5m[1d])
                           labels:
                             aggregation: 1d
                             profile: Max OverAll
-                        - record: 'acm_vm_rs:cluster:memory_request'
+                        - record: 'acm_vm_rs_test:cluster:memory_request'
                           expr: |
-                            max_over_time(acm_vm_rs:cluster:memory_request:5m[1d])
+                            max_over_time(acm_vm_rs_test:cluster:memory_request:5m[1d])
                           labels:
                             aggregation: 1d
                             profile: Max OverAll
-                        - record: 'acm_vm_rs:cluster:memory_usage'
+                        - record: 'acm_vm_rs_test:cluster:memory_usage'
                           expr: |
-                            max_over_time(acm_vm_rs:cluster:memory_usage:5m[1d])
+                            max_over_time(acm_vm_rs_test:cluster:memory_usage:5m[1d])
                           labels:
                             aggregation: 1d
                             profile: Max OverAll
-                        - record: 'acm_vm_rs:cluster:cpu_recommendation'
+                        - record: 'acm_vm_rs_test:cluster:cpu_recommendation'
                           expr: |
-                            max_over_time(acm_vm_rs:cluster:cpu_usage{profile="Max OverAll"}[1d]) * (1 + (10/100))
+                            max_over_time(acm_vm_rs_test:cluster:cpu_usage{profile="Max OverAll"}[1d]) * (1 + (10/100))
                           labels:
                             aggregation: 1d
                             profile: Max OverAll
-
+                        - record: 'acm_vm_rs_test:cluster:memory_recommendation'
+                          expr: |
+                            max_over_time(acm_vm_rs_test:namespace:memory_usage{profile="Max OverAll"}[1d]) * (1 + (10/100))
+                          labels:
+                            aggregation: 1d
+                            profile: Max OverAll
                                         
