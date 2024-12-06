@@ -36,4 +36,9 @@ spec:
       operator: Exists
   clusterSets:
     - rs-cluster-set # Referencing the ManagedClusterSet
+  clusterConditions: 
+    - type: ManagedClusterConditionAvailable
+      status: "True"
+    - type: ManagedClusterConditionHubAccepted
+      status: "True"
 ---
