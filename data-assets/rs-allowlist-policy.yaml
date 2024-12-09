@@ -58,5 +58,4 @@ spec:
                   - acm_rs:cluster:memory_request_hard
                   - acm_rs:cluster:memory_request
                   - acm_rs:cluster:memory_usage
-                  - acm_rs:cluster:memory_request_hard
                   - acm_rs:cluster:memory_recommendation
