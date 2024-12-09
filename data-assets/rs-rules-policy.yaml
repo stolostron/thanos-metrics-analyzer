@@ -43,19 +43,6 @@ spec:
                           ) by (namespace)
                           [5m:]
                         )
-                    - record: "acm_rs:namespace:memory_request_hard:5m"
-                      expr: >
-                        max_over_time(
-                          sum(
-                            kube_resourcequota{
-                              resource=~"requests.memory",
-                              type="hard",
-                              namespace!~'openshift.*|xyz.*'
-                            } * on (namespace) group_left()
-                            (kube_namespace_labels{label_env=~"prod|dev"} or kube_namespace_labels{label_env=''})
-                          ) by (namespace)
-                          [5m:]
-                        )
                     - record: "acm_rs:namespace:cpu_request:5m"
                       expr: >
                         max_over_time(
@@ -82,6 +69,19 @@ spec:
                                 (kube_namespace_labels{label_env=~"prod|dev"} or kube_namespace_labels{label_env=''})
                             ) by (namespace)
                             [5m:]
+                        )
+                    - record: "acm_rs:namespace:memory_request_hard:5m"
+                      expr: >
+                        max_over_time(
+                          sum(
+                            kube_resourcequota{
+                              resource=~"requests.memory",
+                              type="hard",
+                              namespace!~'openshift.*|xyz.*'
+                            } * on (namespace) group_left()
+                            (kube_namespace_labels{label_env=~"prod|dev"} or kube_namespace_labels{label_env=''})
+                          ) by (namespace)
+                          [5m:]
                         )
                     - record: "acm_rs:namespace:memory_request:5m"
                       expr: >
@@ -121,14 +121,6 @@ spec:
                       labels:
                         aggregation: 1d
                         profile: Max OverAll
-                    - record: "acm_rs:namespace:memory_request_hard"
-                      expr: >
-                        max_over_time(
-                          acm_rs:namespace:memory_request_hard:5m[1d]
-                          )
-                      labels:
-                        aggregation: 1d
-                        profile: Max OverAll
                     - record: "acm_rs:namespace:cpu_request"
                       expr: >
                         max_over_time(
@@ -142,6 +134,20 @@ spec:
                         max_over_time(
                             acm_rs:namespace:cpu_usage:5m[1d]
                         )
+                      labels:
+                        aggregation: 1d
+                        profile: Max OverAll
+                    - record: "acm_rs:namespace:cpu_recommendation"
+                      expr: >
+                        (max_over_time(acm_rs:namespace:cpu_usage{profile="Max OverAll"}[1d]) * (1 + (10/100)))
+                      labels:
+                        aggregation: 1d
+                        profile: Max OverAll
+                    - record: "acm_rs:namespace:memory_request_hard"
+                      expr: >
+                        max_over_time(
+                          acm_rs:namespace:memory_request_hard:5m[1d]
+                          )
                       labels:
                         aggregation: 1d
                         profile: Max OverAll
@@ -161,12 +167,6 @@ spec:
                       labels:
                         aggregation: 1d
                         profile: Max OverAll
-                    - record: "acm_rs:namespace:cpu_recommendation"
-                      expr: >
-                        (max_over_time(acm_rs:namespace:cpu_usage{profile="Max OverAll"}[1d]) * (1 + (10/100)))
-                      labels:
-                        aggregation: 1d
-                        profile: Max OverAll
                     - record: "acm_rs:namespace:memory_recommendation"
                       expr: >
                         (max_over_time(acm_rs:namespace:memory_usage{profile="Max OverAll"}[1d]) * (1 + (10/100)))
@@ -182,19 +182,6 @@ spec:
                           sum(
                             kube_resourcequota{
                               resource=~"requests.cpu",
-                              type="hard",
-                              namespace!~'openshift.*|xyz.*'
-                            } * on (namespace) group_left()
-                            (kube_namespace_labels{label_env=~"prod|dev"} or kube_namespace_labels{label_env=''})
-                          ) by (cluster)
-                          [5m:]
-                        )
-                    - record: "acm_rs:cluster:memory_request_hard:5m"
-                      expr: >
-                        max_over_time(
-                          sum(
-                            kube_resourcequota{
-                              resource=~"requests.memory",
                               type="hard",
                               namespace!~'openshift.*|xyz.*'
                             } * on (namespace) group_left()
@@ -229,6 +216,19 @@ spec:
                             ) by (cluster)
                             [5m:]
                           )
+                    - record: "acm_rs:cluster:memory_request_hard:5m"
+                      expr: >
+                        max_over_time(
+                          sum(
+                            kube_resourcequota{
+                              resource=~"requests.memory",
+                              type="hard",
+                              namespace!~'openshift.*|xyz.*'
+                            } * on (namespace) group_left()
+                            (kube_namespace_labels{label_env=~"prod|dev"} or kube_namespace_labels{label_env=''})
+                          ) by (cluster)
+                          [5m:]
+                        )
                     - record: "acm_rs:cluster:memory_request:5m"
                       expr: >
                         max_over_time(
@@ -265,12 +265,6 @@ spec:
                       labels:
                         aggregation: 1d
                         profile: Max OverAll
-                    - record: "acm_rs:cluster:memory_request_hard"
-                      expr: >
-                        max_over_time(acm_rs:cluster:memory_request_hard:5m[1d])
-                      labels:
-                        aggregation: 1d
-                        profile: Max OverAll
                     - record: "acm_rs:cluster:cpu_request"
                       expr: >
                         max_over_time(
@@ -287,6 +281,18 @@ spec:
                       labels:
                         aggregation: 1d
                         profile: Max OverAll
+                    - record: "acm_rs:cluster:cpu_recommendation"
+                      expr: >
+                        (max_over_time(acm_rs:cluster:cpu_usage{profile="Max OverAll"}[1d]) * (1 + (10/100)))
+                      labels:
+                        aggregation: 1d
+                        profile: Max OverAll
+                    - record: "acm_rs:cluster:memory_request_hard"
+                      expr: >
+                        max_over_time(acm_rs:cluster:memory_request_hard:5m[1d])
+                      labels:
+                        aggregation: 1d
+                        profile: Max OverAll
                     - record: "acm_rs:cluster:memory_request"
                       expr: >
                         max_over_time(
@@ -300,12 +306,6 @@ spec:
                         max_over_time(
                             acm_rs:cluster:memory_usage:5m[1d]
                         )
-                      labels:
-                        aggregation: 1d
-                        profile: Max OverAll
-                    - record: "acm_rs:cluster:cpu_recommendation"
-                      expr: >
-                        (max_over_time(acm_rs:cluster:cpu_usage{profile="Max OverAll"}[1d]) * (1 + (10/100)))
                       labels:
                         aggregation: 1d
                         profile: Max OverAll
